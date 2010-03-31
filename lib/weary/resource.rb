@@ -62,7 +62,7 @@ module Weary
       begin
         URI.parse(@url)
       rescue URI::InvalidURIError
-        nil
+        @url
       end
     end
     
@@ -89,8 +89,17 @@ module Weary
     # Setup the parameters to make the Request with
     def setup_parameters(params={}, defaults=nil)
       params = defaults ? defaults.merge(params) : params
+      setup_url(params)
       find_missing_requirements(params)
       remove_unnecessary_params(params)
+    end
+    
+    # interpolate url based on params
+    def setup_url(params)
+      if @url[/http/].nil? and params[:api_domain]
+        @url = "#{params[:api_domain]}#{@url}"
+      end
+      @url = Addressable::Template.new(@url).expand(params).to_s if params
     end
     
     # Search the given parameters to see if they are missing any required params

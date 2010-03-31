@@ -1,9 +1,12 @@
+require 'addressable/template'
 require 'uri'
 require 'net/http'
 require 'net/https'
 
 require 'crack'
 require 'oauth'
+
+
 
 autoload :Yaml, 'yaml'
 

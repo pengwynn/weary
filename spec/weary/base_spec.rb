@@ -333,14 +333,22 @@ describe Weary::Base do
       obj.important(:id => 1234).follows?.should == false
     end
     
-    # it 'should work with relative URLs' do
-    #   @klass.get "some_deep_method" do |r|
-    #     r.url = "some/deep/method"
-    #   end
-    #   obj = @klass.new 
-    #   obj.resources[:some_deep_method].url.normalize.to_s.should == "http://bar.foo/some/deep/method.json"
-    #   #@klass.resources[:some_deep_method].url.normalize.to_s.should == "http://bar.foo/some/deep/method.json"
-    # end
+    it 'should work with relative URLs' do
+      @klass.get "some_deep_method" do |r|
+        r.url = "some/deep/method.json"
+      end
+      obj = @klass.new 
+      obj.some_deep_method.uri.normalize.to_s.should == "http://foobar.com/some/deep/method.json"
+    end
+    
+    it 'should work with interpolated URLs' do
+      @klass.get "profile" do |r|
+        r.url = "http://{user}.foo.com/profile.json"
+      end
+      obj = @klass.new 
+      obj.defaults = {:user => "mwunsch"}
+      obj.profile.uri.normalize.to_s.should == "http://mwunsch.foo.com/profile.json"
+    end
     
   end
 end

@@ -129,11 +129,11 @@ describe Weary::Resource do
       @test.url.normalize.to_s.should == 'http://foo.bar/foobar'
     end
     
-    it "rejects fake url's" do
-      #lambda { @test.url = "this is not really a url"; @test.build! }.should raise_error(URI::InvalidURIError)
-      @test.url = "this is not really a url"
-      @test.url.should == nil
-    end
+    # it "rejects fake url's" do
+    #   #lambda { @test.url = "this is not really a url"; @test.build! }.should raise_error(URI::InvalidURIError)
+    #   @test.url = "this is not really a url"
+    #   @test.url.should == nil
+    # end
   end
   
   describe 'Request Builder' do

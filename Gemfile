@@ -2,6 +2,7 @@ source :gemcutter
 
 gem 'crack', '>= 0.1.7'
 gem 'oauth', '>= 0.3.5'
+gem 'addressable'
 
 group :test do
 	gem 'rake'

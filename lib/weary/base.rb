@@ -120,7 +120,8 @@ module Weary
       # Build a method to form a Request for the given Resource
       def build_method(resource)
         define_method resource.name.to_sym do |*args|
-          args.blank? ? params = {} : params = args[0]
+          params = {:api_domain => self.class.instance_variable_get(:@domain) }
+          params.merge!(args[0]) unless args.blank? 
           resource.build!(params, @defaults, @credentials)
         end
       end
