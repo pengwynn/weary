@@ -1,7 +1,7 @@
 module Weary
   class Resource
-    attr_reader :name, :via, :with, :requires, :url
-    attr_accessor :headers
+    attr_reader :name, :via, :with, :requires
+    attr_accessor :headers, :url
     
     def initialize(name)
       self.name = name
@@ -33,6 +33,11 @@ module Weary
       with ? @with = (with | @requires) : (@with = @requires)
     end
     
+    # Default param values. Should be a hash.
+    def defaults=(params)
+      @defaults = params
+    end
+    
     # Sets whether the Resource requires authentication. Always sets to a boolean value.
     def authenticates=(bool)
       @authenticates = bool ? true : false
@@ -53,9 +58,12 @@ module Weary
       @follows
     end
     
-    # Set the Resource's URL as a URI
-    def url=(uri)
-      @url = URI.parse(uri)
+    def url
+      begin
+        URI.parse(@url)
+      rescue URI::InvalidURIError
+        nil
+      end
     end
     
     # A hash representation of the Resource
@@ -71,9 +79,9 @@ module Weary
     
     # Take parameters, default params, and credentials and build a Request object for this Resource
     def build!(params={}, defaults=nil, credentials=nil)
-      uri = @url
       parameters = setup_parameters(params, defaults)
       request_opts = setup_options(parameters, credentials)
+      uri = url
       uri.query = request_opts[:query].to_params if request_opts[:query]
       Request.new(uri.normalize.to_s, @via, request_opts)
     end

@@ -101,7 +101,13 @@ module Weary
         preparation = Weary::Resource.new(name)
         preparation.via = via
         preparation.headers = @headers unless @headers.blank?
-        preparation.url = "#{@domain}#{preparation.name}." + (@format || :json).to_s if @domain
+        if @domain
+          if preparation.name[/\.(json|xml|csv)/]
+            preparation.url = "#{@domain}#{preparation.name}"
+          else
+            preparation.url = "#{@domain}#{preparation.name}." + (@format || :json).to_s
+          end
+        end
         preparation
       end
       

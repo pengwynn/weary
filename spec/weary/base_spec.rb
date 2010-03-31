@@ -59,6 +59,7 @@ describe Weary::Base do
       end
       
       it 'builds a default url if a domain is provided' do
+        @t.build!
         @t.url.normalize.to_s.should == 'http://foobar.com/test.xml'
       end
       
@@ -66,6 +67,23 @@ describe Weary::Base do
         t = Class.new(Weary::Base)
         t.domain 'http://foobar.com'
         p = t.prepare_resource("test",:get)
+        p.build!
+        p.url.normalize.to_s.should == 'http://foobar.com/test.json'
+      end
+      
+      it 'builds a default url based on default domain and relative path' do
+        t = Class.new(Weary::Base)
+        t.domain 'http://foobar.com'
+        p = t.prepare_resource("users/test.json",:get)
+        p.build!
+        p.url.normalize.to_s.should == 'http://foobar.com/users/test.json'
+      end
+      
+      it 'does not mess with the format if provided in the url' do
+        t = Class.new(Weary::Base)
+        t.domain 'http://foobar.com'
+        p = t.prepare_resource("test.json",:get)
+        p.build!
         p.url.normalize.to_s.should == 'http://foobar.com/test.json'
       end
       
@@ -268,10 +286,9 @@ describe Weary::Base do
     
     it 'can set defaults to pass into requests' do
       obj = @klass.new
-      
       obj.defaults = {:user => "mwunsch", :message => "hello world"}
       obj.defaults.should == {:user => "mwunsch", :message => "hello world"}
-      obj.thing(:id => 1234).uri.query.should == {:user => "mwunsch", :message => "hello world", :id => 1234}.to_params
+      obj.thing(:id => 1234).uri.query.should == {:message => "hello world", :user => "mwunsch", :id => 1234}.to_params
     end
     
     it 'has a list of resources' do
@@ -315,6 +332,15 @@ describe Weary::Base do
       obj.modify_resource(:important) {|r| r.follows = false }
       obj.important(:id => 1234).follows?.should == false
     end
+    
+    # it 'should work with relative URLs' do
+    #   @klass.get "some_deep_method" do |r|
+    #     r.url = "some/deep/method"
+    #   end
+    #   obj = @klass.new 
+    #   obj.resources[:some_deep_method].url.normalize.to_s.should == "http://bar.foo/some/deep/method.json"
+    #   #@klass.resources[:some_deep_method].url.normalize.to_s.should == "http://bar.foo/some/deep/method.json"
+    # end
     
   end
 end

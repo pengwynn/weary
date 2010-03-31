@@ -122,6 +122,7 @@ describe Weary::Resource do
   describe 'URL' do
     it 'is a valid URI' do
       @test.url = 'http://foo.bar/foobar'
+      @test.build!
       @test.url.scheme.should == 'http'
       @test.url.host.should == 'foo.bar'
       @test.url.path.should == '/foobar'
@@ -129,7 +130,9 @@ describe Weary::Resource do
     end
     
     it "rejects fake url's" do
-      lambda { @test.url = "this is not really a url" }.should raise_error
+      #lambda { @test.url = "this is not really a url"; @test.build! }.should raise_error(URI::InvalidURIError)
+      @test.url = "this is not really a url"
+      @test.url.should == nil
     end
   end
   
